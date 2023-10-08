@@ -12,6 +12,22 @@ class Response extends shelf.Response {
     super.encoding,
   });
 
+  factory Response(
+    int statusCode, {
+    Object? body,
+    Map<String, Object>? headers,
+    Map<String, Object>? context,
+    Encoding? encoding,
+  }) {
+    return Response._(
+      statusCode,
+      body: body,
+      headers: headers,
+      context: context,
+      encoding: encoding,
+    );
+  }
+
   factory Response.json({
     int statusCode = HttpStatus.ok,
     Object? body,
