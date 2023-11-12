@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 class Password {
+  const Password._();
+
   static String hash(String password, {Hash hash = sha256}) {
     return hash.convert(utf8.encode(password)).toString();
   }
