@@ -27,7 +27,11 @@ final class Express implements ExpressBase {
   final List<Controller> _controllers = [];
   final List<Middleware> _middlewares = [];
 
-  Express({this.prefix});
+  Express({this.prefix}) {
+    if (prefix != null) {
+      assert(prefix!.startsWith('/'), 'Prefix must start with "/"');
+    }
+  }
 
   @override
   Express all(String path, Function handler) {
@@ -88,10 +92,10 @@ final class Express implements ExpressBase {
     final router = shelf_router.Router();
 
     for (final route in _routes) {
-      router.add(route.method.verb, '${prefix != null ? '/$prefix' : ''}${route.path}', route.handler);
+      router.add(route.method.verb, '${prefix ?? ''}${route.path}', route.handler);
     }
     for (final controller in _controllers) {
-      router.mount('${prefix != null ? '/$prefix' : ''}${controller.path}', controller.routes);
+      router.mount('${prefix ?? ''}${controller.path}', controller.routes);
     }
     var handler = Pipeline().addHandler(router);
     for (final middleware in _middlewares) {
