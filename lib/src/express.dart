@@ -88,10 +88,10 @@ final class Express implements ExpressBase {
     final router = shelf_router.Router();
 
     for (final route in _routes) {
-      router.add(route.method.verb, '${prefix ?? ''}${route.path}', route.handler);
+      router.add(route.method.verb, '${prefix != null ? '/$prefix' : ''}${route.path}', route.handler);
     }
     for (final controller in _controllers) {
-      router.mount('${prefix ?? ''}${controller.path}', controller.routes);
+      router.mount('${prefix != null ? '/$prefix' : ''}${controller.path}', controller.routes);
     }
     var handler = Pipeline().addHandler(router);
     for (final middleware in _middlewares) {
