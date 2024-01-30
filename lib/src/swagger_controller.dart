@@ -12,14 +12,14 @@ class SwaggerController extends Controller {
 
   SwaggerController(
     String filePath, {
-    String swaggerPath = 'swagger',
+    String swaggerPath = '/swagger',
     String swaggerTitle = 'Swagger UI',
   }) : super('/$swaggerPath') {
     _file = File(p.join(Directory.current.path, filePath));
 
     _swaggerTitle = swaggerTitle;
 
-    _swaggerPath = swaggerPath;
+    _swaggerPath = swaggerPath.startsWith('/') ? swaggerPath : '/$swaggerPath';
 
     assert(p.extension(_file.path).endsWith('.json') || p.extension(_file.path).endsWith('.yaml'), Exception('File must be .json or .yaml'));
 
@@ -75,7 +75,7 @@ class SwaggerController extends Controller {
           SwaggerUIBundle.presets.apis,
           SwaggerUIStandalonePreset
       ],
-      url: "$uri/$_swaggerPath/src/${p.basename(_file.path)}",
+      url: "$uri$_swaggerPath/src/${p.basename(_file.path)}",
       layout: "BaseLayout",
     });
   };

@@ -90,7 +90,7 @@ final class Express implements ExpressBase {
   }
 
   @override
-  Express useSwagger(String filePath, {String swaggerPath = 'swagger', String swaggerTitle = 'Swagger UI'}) {
+  Express useSwagger(String filePath, {String swaggerPath = '/swagger', String swaggerTitle = 'Swagger UI'}) {
     _controllers.add(
       SwaggerController(
         filePath,
