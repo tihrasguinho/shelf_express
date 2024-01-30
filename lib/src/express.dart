@@ -94,8 +94,9 @@ final class Express implements ExpressBase {
     _controllers.add(
       SwaggerController(
         filePath,
-        swaggerPath: '${prefix ?? ''}$swaggerPath',
+        swaggerPath: swaggerPath,
         swaggerTitle: swaggerTitle,
+        prefix: prefix,
       ),
     );
     return this;

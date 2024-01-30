@@ -8,18 +8,17 @@ import 'package:shelf_express/shelf_express.dart';
 class SwaggerController extends Controller {
   late final File _file;
   late final String _swaggerTitle;
-  late final String _swaggerPath;
+  String? _prefix;
 
   SwaggerController(
     String filePath, {
     String swaggerPath = '/swagger',
     String swaggerTitle = 'Swagger UI',
-  }) : super('/$swaggerPath') {
+    String? prefix,
+  }) : super(swaggerPath.startsWith('/') ? swaggerPath : '/$swaggerPath') {
     _file = File(p.join(Directory.current.path, filePath));
-
+    _prefix = prefix;
     _swaggerTitle = swaggerTitle;
-
-    _swaggerPath = swaggerPath.startsWith('/') ? swaggerPath : '/$swaggerPath';
 
     assert(p.extension(_file.path).endsWith('.json') || p.extension(_file.path).endsWith('.yaml'), Exception('File must be .json or .yaml'));
 
@@ -31,11 +30,9 @@ class SwaggerController extends Controller {
   }
 
   Future<Response> _swaggerSrc(Request request) async {
-    final content = await _file.readAsString();
-
     return Response(
       200,
-      body: content,
+      body: _file.openRead(),
       headers: {
         'content-type': lookupMimeType(p.basename(_file.path)) ?? 'application/octet-stream',
       },
@@ -75,7 +72,7 @@ class SwaggerController extends Controller {
           SwaggerUIBundle.presets.apis,
           SwaggerUIStandalonePreset
       ],
-      url: "$uri$_swaggerPath/src/${p.basename(_file.path)}",
+      url: "$uri${_prefix ?? ''}$path/src/${p.basename(_file.path)}",
       layout: "BaseLayout",
     });
   };
