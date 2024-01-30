@@ -7,6 +7,7 @@ export 'src/route.dart';
 export 'src/response.dart';
 export 'src/middlewares.dart';
 export 'src/extensions/request_extension.dart';
+export 'src/swagger_controller.dart';
 export 'src/helpers/password.dart';
 
 export 'package:shelf/shelf.dart' show Middleware, Request, Handler;

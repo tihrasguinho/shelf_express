@@ -8,6 +8,7 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import 'controller.dart';
 import 'method.dart';
 import 'route.dart';
+import 'swagger_controller.dart';
 
 abstract interface class ExpressBase {
   ExpressBase all(String path, Function handler);
@@ -16,17 +17,23 @@ abstract interface class ExpressBase {
   ExpressBase post(String path, Function handler);
   ExpressBase put(String path, Function handler);
   ExpressBase delete(String path, Function handler);
-  ExpressBase withController(Controller controller);
-  ExpressBase withMiddleware(Middleware middleware);
+  ExpressBase useController(Controller controller);
+  ExpressBase useMiddleware(Middleware middleware);
+  ExpressBase useSwagger(String filePath, {String swaggerPath = 'swagger', String swaggerTitle = 'Swagger UI'});
   Future<HttpServer> start({Object address = '0.0.0.0', int port = 8080, void Function()? onListen});
 }
 
 final class Express implements ExpressBase {
+  final String? prefix;
   final List<Route> _routes = [];
   final List<Controller> _controllers = [];
   final List<Middleware> _middlewares = [];
 
-  Express();
+  Express({this.prefix}) {
+    if (prefix != null) {
+      assert(prefix!.startsWith('/'), 'Prefix must start with "/"');
+    }
+  }
 
   @override
   Express all(String path, Function handler) {
@@ -71,14 +78,20 @@ final class Express implements ExpressBase {
   }
 
   @override
-  Express withController(Controller controller) {
+  Express useController(Controller controller) {
     _controllers.add(controller);
     return this;
   }
 
   @override
-  Express withMiddleware(Middleware middleware) {
+  Express useMiddleware(Middleware middleware) {
     _middlewares.add(middleware);
+    return this;
+  }
+
+  @override
+  Express useSwagger(String filePath, {String swaggerPath = 'swagger', String swaggerTitle = 'Swagger UI'}) {
+    _controllers.add(SwaggerController(filePath, swaggerPath: swaggerPath, swaggerTitle: swaggerTitle));
     return this;
   }
 
@@ -87,10 +100,10 @@ final class Express implements ExpressBase {
     final router = shelf_router.Router();
 
     for (final route in _routes) {
-      router.add(route.method.verb, route.path, route.handler);
+      router.add(route.method.verb, '${prefix ?? ''}${route.path}', route.handler);
     }
     for (final controller in _controllers) {
-      router.mount(controller.path, controller.routes);
+      router.mount('${prefix ?? ''}${controller.path}', controller.routes);
     }
     var handler = Pipeline().addHandler(router);
     for (final middleware in _middlewares) {
