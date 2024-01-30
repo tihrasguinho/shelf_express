@@ -31,7 +31,7 @@ final class Express implements ExpressBase {
 
   Express({this.prefix}) {
     if (prefix != null) {
-      assert(prefix!.startsWith('/'), 'Prefix must start with "/"');
+      assert(prefix!.startsWith('/'), Exception('Prefix must start with "/"'));
     }
   }
 
@@ -91,7 +91,13 @@ final class Express implements ExpressBase {
 
   @override
   Express useSwagger(String filePath, {String swaggerPath = 'swagger', String swaggerTitle = 'Swagger UI'}) {
-    _controllers.add(SwaggerController(filePath, swaggerPath: swaggerPath, swaggerTitle: swaggerTitle));
+    _controllers.add(
+      SwaggerController(
+        filePath,
+        swaggerPath: '${prefix ?? ''}$swaggerPath',
+        swaggerTitle: swaggerTitle,
+      ),
+    );
     return this;
   }
 
