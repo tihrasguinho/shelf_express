@@ -8,6 +8,7 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import 'controller.dart';
 import 'method.dart';
 import 'route.dart';
+import 'swagger_controller.dart';
 
 abstract interface class ExpressBase {
   ExpressBase all(String path, Function handler);
@@ -16,8 +17,9 @@ abstract interface class ExpressBase {
   ExpressBase post(String path, Function handler);
   ExpressBase put(String path, Function handler);
   ExpressBase delete(String path, Function handler);
-  ExpressBase withController(Controller controller);
-  ExpressBase withMiddleware(Middleware middleware);
+  ExpressBase useController(Controller controller);
+  ExpressBase useMiddleware(Middleware middleware);
+  ExpressBase useSwagger(String filePath, {String swaggerPath = 'swagger', String swaggerTitle = 'Swagger UI'});
   Future<HttpServer> start({Object address = '0.0.0.0', int port = 8080, void Function()? onListen});
 }
 
@@ -76,14 +78,20 @@ final class Express implements ExpressBase {
   }
 
   @override
-  Express withController(Controller controller) {
+  Express useController(Controller controller) {
     _controllers.add(controller);
     return this;
   }
 
   @override
-  Express withMiddleware(Middleware middleware) {
+  Express useMiddleware(Middleware middleware) {
     _middlewares.add(middleware);
+    return this;
+  }
+
+  @override
+  Express useSwagger(String filePath, {String swaggerPath = 'swagger', String swaggerTitle = 'Swagger UI'}) {
+    _controllers.add(SwaggerController(filePath, swaggerPath: swaggerPath, swaggerTitle: swaggerTitle));
     return this;
   }
 
