@@ -1,8 +1,17 @@
+import '../response.dart';
+
 abstract class ExpressException implements Exception {
   final int statusCode;
   final String message;
 
   ExpressException(this.statusCode, this.message);
+
+  Response toResponse() => Response.json(
+        statusCode: statusCode,
+        body: {
+          'message': message,
+        },
+      );
 }
 
 class BadRequestException extends ExpressException {
